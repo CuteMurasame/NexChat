@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexChat</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-card fade-up">
+            <div class="brand-icon"><i class="ri-telegram-fill"></i></div>
+            <h2>欢迎登录</h2>
+            <p class="subtitle">NexChat 内部通讯系统</p>
+            <div class="input-group">
+                <input type="text" id="login-user" placeholder="用户名" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <input type="password" id="login-pass" placeholder="密码">
+            </div>
+            <button onclick="login()" class="btn-primary btn-block">
+                立即进入 <i class="ri-arrow-right-line"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="chat-screen" class="hidden">
+        
+        <div id="drag-overlay" class="hidden">
+            <div class="drag-content">
+                <i class="ri-upload-cloud-2-line"></i>
+                <p>松开鼠标发送文件</p>
+            </div>
+        </div>
+
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="avatar-wrapper" title="点击上传头像">
+                    <label for="avatar-upload">
+                        <img id="my-avatar-img" src="" class="hidden">
+                        <div id="my-avatar-placeholder" class="avatar-placeholder">U</div>
+                        <div class="avatar-overlay"><i class="ri-camera-fill"></i></div>
+                    </label>
+                    <input type="file" id="avatar-upload" accept="image/*" onchange="uploadAvatar()" hidden>
+                </div>
+                
+                <div class="user-info">
+                    <span id="current-user" class="username">User</span>
+                    <span id="role-badge" class="role-badge hidden">管理员</span>
+                </div>
+            </div>
+
+            <div class="nav-menu">
+                <div class="nav-item active">
+                    <i class="ri-hashtag"></i> <span>公共频道</span>
+                </div>
+            </div>
+
+            <div id="admin-panel" class="admin-panel hidden">
+                <div class="panel-header"><i class="ri-user-add-line"></i> 用户管理</div>
+                <div class="admin-form">
+                    <input type="text" id="new-user" placeholder="新用户名">
+                    <input type="text" id="new-pass" placeholder="初始密码">
+                    <button onclick="createUser()" class="btn-secondary btn-sm">创建用户</button>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button onclick="logout()" class="btn-text"><i class="ri-logout-box-r-line"></i> 退出登录</button>
+            </div>
+        </aside>
+        
+        <main class="chat-area">
+            <header class="chat-header">
+                <div class="header-info">
+                    <h3>公共讨论组</h3>
+                    <span class="status-text">实时在线</span>
+                </div>
+            </header>
+
+            <div id="messages" class="messages-container"></div>
+
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <button class="btn-icon" onclick="document.getElementById('file-input').click()" title="发送文件">
+                        <i class="ri-attachment-2"></i>
+                    </button>
+                    <input type="file" id="file-input" hidden onchange="handleFileSelect(this)">
+                    
+                    <textarea id="msg-input" placeholder="输入消息 (Enter 换行，Ctrl+Enter 发送)..." rows="1"></textarea>
+                    
+                    <button onclick="sendMessage()" class="btn-send"><i class="ri-send-plane-2-fill"></i></button>
+                </div>
+                <div class="input-hint">Ctrl + Enter 发送，支持 Markdown / LaTeX</div>
+            </div>
+        </main>
+    </div>
+
+    <div id="context-menu" class="context-menu hidden">
+        <div class="menu-item" onclick="copyMessage()"><i class="ri-file-copy-line"></i> 复制</div>
+        <div class="menu-item danger hidden" id="recall-btn" onclick="recallMessage()"><i class="ri-delete-bin-7-line"></i> 撤回</div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client.js"></script>
+</body>
+</html>
